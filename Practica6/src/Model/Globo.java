@@ -5,26 +5,52 @@ import java.awt.*;
 import java.util.Random;
 
 public class Globo extends Thread {
-    private int x, y, velocidadX;
+    private int x, y, Xinicial;
     private boolean exploto = false;
     private static final int VELOCIDAD_Y = 2; // Velocidad de ascenso
-    private static final int TAMANO = 30; // Tamaño del globo
+    private int VELOCIDAD_X = 1; // Velocidad de oscilacion
+    private static final int OSCILACION_MAX=20;
     private Color color;
-
+    private boolean moviendoDerecha; // Dirección del movimiento oscilatorio
+    
     public Globo(int x, int y, Color color) {
         this.x = x;
         this.y = y;
         this.color = color;
-        this.velocidadX = new Random().nextInt(3) - 1; // Movimiento lateral aleatorio
+        this.Xinicial=x;
+        this.moviendoDerecha=InicioOscilacion();
     }
-
+    
+    public boolean InicioOscilacion() {
+    	//Metodo para generar el movimiento oscilatorio inicial de forma aleatoria:
+    	Random random=new Random();
+    	int valor=random.nextInt();
+    	if(valor<0) {
+    		return false;
+    	}
+    	else {
+    		return true;
+    	}
+    }
+    
     @Override
     public void run() {
         while (!exploto) {
             // Movimiento vertical hacia arriba
             y -= VELOCIDAD_Y;
-            x += velocidadX; // Oscilación lateral
+            
+            // Movimiento oscilatorio dentro de un área de 40 unidades
+            if (moviendoDerecha) {
+                x += VELOCIDAD_X; // Mover hacia la derecha
+            } else {
+                x -= VELOCIDAD_X; // Mover hacia la izquierda
+            }
 
+            // Cambiar dirección si el globo alcanza los límites de la oscilación
+            if (x >= Xinicial + 20 || x <= Xinicial - 20) {
+                moviendoDerecha = !moviendoDerecha; // Cambiar dirección
+            }
+            
             // Límite de movimiento lateral (evitar que se salga de la ventana)
             if (x < 0) x = 0;
             if (x > 770) x = 770;
@@ -48,7 +74,6 @@ public class Globo extends Thread {
 
     public int getX() { return x; }
     public int getY() { return y; }
-    public int getTamaño() { return TAMANO; }
     public Color getColor() { return color; }
 
     public void detener() {

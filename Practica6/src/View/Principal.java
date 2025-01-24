@@ -13,17 +13,8 @@ public class Principal extends JFrame {
 	
 	        // Crear el panel personalizado
 	        PanelCarrera panel = new PanelCarrera();
-	
-	        // Agregar el panel y el botón al JFrame
-	        setLayout(null);
 	        add(panel); // Agregar el panel al JFrame
-	       
-	        // Crear el botón para iniciar la carrera
-	        JButton btnIniciar = new JButton("Iniciar Carrera");
-	        btnIniciar.setBounds(350, 380, 120, 30); // Ubicación del botón
-	        add(btnIniciar); // Agregar el botón al JFrame
-	        
-	        btnIniciar.addActionListener(e -> panel.iniciarCarrera()); // Acción del botón
+	      
 	
 
 	    }
