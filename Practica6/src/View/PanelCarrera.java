@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class PanelCarrera extends JPanel {
-    private final List<Globo> globos; // Lista de globos
+	private final List<Globo> globos; // Lista de globos
     private boolean carreraTerminada = false; // Control de la carrera
     private BufferedImage buffer; // Imagen en memoria para el doble buffer
     private Techo techo; // El techo al que los globos deben llegar
@@ -20,10 +20,14 @@ class PanelCarrera extends JPanel {
         globos = new ArrayList<>();
         buffer = new BufferedImage(800, 450, BufferedImage.TYPE_INT_ARGB);
         techo = new Techo(); // Inicializamos el techo
-        iniciarGlobos();
+        setLayout(null); // Layout nulo para colocar componentes manualmente
     }
 
-    private void iniciarGlobos() {
+    public void iniciarCarrera() {
+        // Restablecemos las variables de la carrera
+        globos.clear();
+        carreraTerminada = false;
+        
         // Crear varios globos con posiciones iniciales
         globos.add(new Globo(100, 400, Color.RED));
         globos.add(new Globo(200, 400, Color.BLUE));
