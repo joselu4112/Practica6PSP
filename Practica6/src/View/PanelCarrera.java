@@ -1,28 +1,32 @@
 package View;
 
-import javax.swing.*;
-
-import Model.Globo;
-import Model.Techo;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import Model.Globo;
+import Model.Techo;
+
 class PanelCarrera extends JPanel {
     private final List<Globo> globos; // Lista de globos
+    private final List<Globo> llegadas; // Lista para registrar el orden de llegada
     private boolean carreraTerminada = false; // Control de la carrera
     private BufferedImage buffer; // Imagen en memoria para el doble buffer
     private Techo techo; // El techo al que los globos deben llegar
-    private final List<Globo> globosFinalistas; // Lista de globos que han llegado al techo
-    private final List<Long> tiemposDeLlegada; // Lista de tiempos en los que los globos llegaron al techo
 
     public PanelCarrera() {
         globos = new ArrayList<>();
+        llegadas = new ArrayList<>();
         buffer = new BufferedImage(800, 450, BufferedImage.TYPE_INT_ARGB);
         techo = new Techo(); // Inicializamos el techo
-        globosFinalistas = new ArrayList<>();
         tiemposDeLlegada = new ArrayList<>();
         iniciarCarrera();
     }
@@ -30,15 +34,15 @@ class PanelCarrera extends JPanel {
     public void iniciarCarrera() {
         // Restablecemos las variables de la carrera
         globos.clear();
-        globosFinalistas.clear();
-        tiemposDeLlegada.clear();
+        llegadas.clear();
         carreraTerminada = false;
 
         // Crear varios globos con posiciones iniciales
-        globos.add(new Globo(100, 400, Color.RED));
-        globos.add(new Globo(200, 400, Color.BLUE));
-        globos.add(new Globo(300, 400, Color.GREEN));
-        globos.add(new Globo(400, 400, Color.YELLOW));
+        globos.add(new Globo(100, 400, "Rojo"));
+        globos.add(new Globo(200, 400, "Azul"));
+        globos.add(new Globo(300, 400, "Verde"));
+        globos.add(new Globo(400, 400, "Naranja"));
+        globos.add(new Globo(500, 400, "Morado"));
 
         // Iniciar cada globo como un hilo independiente
         for (Globo globo : globos) {
@@ -49,7 +53,7 @@ class PanelCarrera extends JPanel {
         new Thread(() -> {
             while (!carreraTerminada) {
                 repaint(); // Redibujar el panel
-                verificarGanadores(); // Verificar si todos los globos han llegado al techo
+                verificarLlegadas(); // Verificar si algún globo llegó al techo
                 try {
                     Thread.sleep(1); // Actualización periódica
                 } catch (InterruptedException e) {
@@ -81,10 +85,12 @@ class PanelCarrera extends JPanel {
 
         // Dibujar todos los globos en el buffer
         for (Globo globo : globos) {
-            g2d.setColor(Color.BLACK);
-            g2d.fillOval(globo.getX(), globo.getY(), 20, 20);
-            g2d.setColor(globo.getColor());
-            g2d.fillOval(globo.getX() + 3, globo.getY() + 3, 20 - 7, 20 - 7);
+            g2d.drawImage(globo.getImagen(), globo.getX(), globo.getY(), globo.getAncho(), globo.getAlto(), this);
+        }
+
+        // Dibujar el podio si la carrera terminó
+        if (carreraTerminada) {
+            dibujarPodio(g2d);
         }
 
         // Dibujar el buffer en la pantalla
@@ -93,36 +99,13 @@ class PanelCarrera extends JPanel {
         g2d.dispose(); // Liberar los recursos del Graphics2D
     }
 
-    private void verificarGanadores() {
+    private void verificarLlegadas() {
         for (Globo globo : globos) {
-            if (techo.colisionaCon(globo) && !globosFinalistas.contains(globo)) {
-                globosFinalistas.add(globo);
-                tiemposDeLlegada.add(System.currentTimeMillis());
-            }
-        }
-
-        // Verificar si todos los globos han llegado al techo
-        if (globosFinalistas.size() == globos.size()) {
-            carreraTerminada = true;
-            ordenarPorTiempoDeLlegada();
-            notificarClasificacion();
-        }
-    }
-
-    private void ordenarPorTiempoDeLlegada() {
-        // Ordenamos los globos en función de los tiempos de llegada (de menor a mayor)
-        for (int i = 0; i < globosFinalistas.size(); i++) {
-            for (int j = i + 1; j < globosFinalistas.size(); j++) {
-                if (tiemposDeLlegada.get(i) > tiemposDeLlegada.get(j)) {
-                    // Intercambiar globos
-                    Globo tempGlobo = globosFinalistas.get(i);
-                    globosFinalistas.set(i, globosFinalistas.get(j));
-                    globosFinalistas.set(j, tempGlobo);
-
-                    // Intercambiar tiempos
-                    Long tempTiempo = tiemposDeLlegada.get(i);
-                    tiemposDeLlegada.set(i, tiemposDeLlegada.get(j));
-                    tiemposDeLlegada.set(j, tempTiempo);
+            if (techo.colisionaCon(globo) && !llegadas.contains(globo)) { // Si el globo llegó al techo y no está registrado
+                llegadas.add(globo);
+                if (llegadas.size() == globos.size()) { // Todos los globos llegaron
+                    carreraTerminada = true;
+                    detenerCarrera();
                 }
             }
         }
@@ -134,18 +117,28 @@ class PanelCarrera extends JPanel {
             mensaje.append("Posición " + (i + 1) + ": " + obtenerNombreColor(globosFinalistas.get(i).getColor()) + "\n");
         }
 
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(this,
-                    mensaje.toString(),
-                    "Clasificación final", JOptionPane.INFORMATION_MESSAGE);
-        });
-    }
+    private void dibujarPodio(Graphics2D g2d) {
+        // Verificar si hay suficientes llegadas para el podio
+        if (llegadas.size() < 3) return;
 
-    private String obtenerNombreColor(Color color) {
-        if (color.equals(Color.RED)) return "Rojo";
-        if (color.equals(Color.BLUE)) return "Azul";
-        if (color.equals(Color.GREEN)) return "Verde";
-        if (color.equals(Color.YELLOW)) return "Amarillo";
-        return "Desconocido";
+        // Dibujar el podio
+        int baseX = 300;
+        int baseY = 300;
+
+        // Tercer lugar
+        g2d.setColor(Color.ORANGE);
+        g2d.fillRect(baseX, baseY, 60, 50);
+        g2d.drawImage(llegadas.get(llegadas.size() - 3).getImagen(), baseX, baseY - 50, 60, 60, this);
+
+        // Segundo lugar
+        g2d.setColor(Color.GRAY);
+        g2d.fillRect(baseX + 80, baseY - 20, 60, 70);
+        g2d.drawImage(llegadas.get(llegadas.size() - 2).getImagen(), baseX + 80, baseY - 70, 60, 60, this);
+
+        // Primer lugar
+        g2d.setColor(Color.YELLOW);
+        g2d.fillRect(baseX + 160, baseY - 40, 60, 90);
+        g2d.drawImage(llegadas.get(llegadas.size() - 1).getImagen(), baseX + 160, baseY - 90, 60, 60, this);
     }
 }
+
