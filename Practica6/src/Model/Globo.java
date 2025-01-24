@@ -4,19 +4,30 @@ package Model;
 import java.awt.*;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
+
 public class Globo extends Thread {
     private int x, y, velocidadX;
     private boolean exploto = false;
     private static final int VELOCIDAD_Y = 2; // Velocidad de ascenso
-    private static final int TAMANO = 30; // Tamaño del globo
-    private Color color;
+    private static final int ANCHO = 60; 
+    private static final int ALTO = 80;
+    private Image imagen;
 
-    public Globo(int x, int y, Color color) {
+    public Globo(int x, int y, String color) {
         this.x = x;
         this.y = y;
-        this.color = color;
         this.velocidadX = new Random().nextInt(3) - 1; // Movimiento lateral aleatorio
+
+        // Cargar la imagen correspondiente al color
+        String rutaImagen = "../Images/globo" + color + ".png";
+        this.imagen = new ImageIcon(getClass().getResource(rutaImagen)).getImage();
     }
+
+    public Image getImagen() {
+        return imagen;
+    }
+
 
     @Override
     public void run() {
@@ -45,13 +56,24 @@ public class Globo extends Thread {
     public boolean haExplotado() {
         return exploto;
     }
-
-    public int getX() { return x; }
-    public int getY() { return y; }
-    public int getTamaño() { return TAMANO; }
-    public Color getColor() { return color; }
-
+    
     public void detener() {
         this.exploto = true;
     }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+
+	public int getAncho() { return ANCHO;}
+
+	public int getAlto() {return ALTO;}
+
+	public Object getColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
 }
