@@ -47,9 +47,8 @@ class PanelCarrera extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 // Cuando se suelta el ratón, los globos se reanudan
                 for (Globo globo : globos) {
-                    if (globo.getBounds().contains(e.getPoint())) {
+                	if(globo.detenido)
                         globo.reanudar(); // Reanudar el globo
-                    }
                 }
             }
         });

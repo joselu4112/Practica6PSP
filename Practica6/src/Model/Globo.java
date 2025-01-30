@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 public class Globo extends Thread {
     private int x, y, Xinicial;
     private boolean exploto = false;
-    private static final int VELOCIDAD_Y = 2; // Velocidad de ascenso
+    private static final int VELOCIDAD_Y = 1; // Velocidad de ascenso
     private static final int ANCHO = 60; 
     private static final int ALTO = 80;
     private Image imagen;
@@ -18,7 +18,7 @@ public class Globo extends Thread {
     private static final int OSCILACION_MAX=20;
     private String color;
     private boolean moviendoDerecha; // Dirección del movimiento oscilatorio
-	private boolean detenido;
+	public boolean detenido;
     
     public Globo(int x, int y, String color) {
         this.x = x;
