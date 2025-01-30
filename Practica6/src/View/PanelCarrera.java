@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,29 @@ class PanelCarrera extends JPanel {
         buffer = new BufferedImage(800, 450, BufferedImage.TYPE_INT_ARGB);
         techo = new Techo(); // Inicializamos el techo
         iniciarCarrera();
+        
+        // Añadir MouseListener para los eventos del ratón
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // Comprobamos si algún globo ha sido clickeado
+                for (Globo globo : globos) {
+                    if (globo.getBounds().contains(e.getPoint())) {
+                        globo.frenar(); // Frenamos el globo mientras se presiona el ratón
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // Cuando se suelta el ratón, los globos se reanudan
+                for (Globo globo : globos) {
+                    if (globo.getBounds().contains(e.getPoint())) {
+                        globo.reanudar(); // Reanudar el globo
+                    }
+                }
+            }
+        });
     }
 
     public void iniciarCarrera() {

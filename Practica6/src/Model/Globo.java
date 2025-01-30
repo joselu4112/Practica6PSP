@@ -18,6 +18,7 @@ public class Globo extends Thread {
     private static final int OSCILACION_MAX=20;
     private String color;
     private boolean moviendoDerecha; // Dirección del movimiento oscilatorio
+	private boolean detenido;
     
     public Globo(int x, int y, String color) {
         this.x = x;
@@ -49,9 +50,10 @@ public class Globo extends Thread {
     @Override
     public void run() {
         while (!exploto) {
-            // Movimiento vertical hacia arriba
-            y -= VELOCIDAD_Y;
-            
+            if (!detenido) {
+            	// Movimiento vertical hacia arriba
+            	y -= VELOCIDAD_Y;
+        	}
             // Movimiento oscilatorio dentro de un área de 40 unidades
             if (moviendoDerecha) {
                 x += VELOCIDAD_X; // Mover hacia la derecha
@@ -60,15 +62,15 @@ public class Globo extends Thread {
             }
 
             // Cambiar dirección si el globo alcanza los límites de la oscilación
-            if (x >= Xinicial + 20 || x <= Xinicial - 20) {
+            if (x >= Xinicial + OSCILACION_MAX || x <= Xinicial - OSCILACION_MAX) {
                 moviendoDerecha = !moviendoDerecha; // Cambiar dirección
             }
-            
+
             // Límite de movimiento lateral (evitar que se salga de la ventana)
             if (x < 0) x = 0;
             if (x > 770) x = 770;
+            
 
-            // Simulación de "gravedad" (limitación en el movimiento)
             try {
                 Thread.sleep(10); // Control de FPS (simulado aquí)
             } catch (InterruptedException e) {
@@ -76,7 +78,23 @@ public class Globo extends Thread {
             }
         }
     }
+    public void frenar() {
+        // Frenar el globo (detener el movimiento vertical)
+        this.detenido = true; // Marcar el globo como detenido
+    }
 
+    public void reanudar() {
+        // Reanudar el movimiento del globo
+        this.detenido = false; // Marcar el globo como en movimiento
+
+        // Si el hilo no está en ejecución, reiniciamos el hilo
+        if (!this.isAlive()) {
+            this.start(); // Iniciar el hilo nuevamente si se ha detenido
+        }
+    }
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, ANCHO, ALTO);
+    }
     public void explotar() {
         this.exploto = true;
     }
