@@ -27,7 +27,6 @@ class PanelCarrera extends JPanel {
         llegadas = new ArrayList<>();
         buffer = new BufferedImage(800, 450, BufferedImage.TYPE_INT_ARGB);
         techo = new Techo(); // Inicializamos el techo
-        tiemposDeLlegada = new ArrayList<>();
         iniciarCarrera();
     }
 
@@ -111,13 +110,14 @@ class PanelCarrera extends JPanel {
         }
     }
 
-    private void notificarClasificacion() {
-        StringBuilder mensaje = new StringBuilder("Clasificación final:\n");
-        for (int i = 0; i < globosFinalistas.size(); i++) {
-            mensaje.append("Posición " + (i + 1) + ": " + obtenerNombreColor(globosFinalistas.get(i).getColor()) + "\n");
-        }
+    private void detenerCarrera() {
+    	for(Globo globo:globos) {
+    		globo.detener();
+    	}
+		
+	}
 
-    private void dibujarPodio(Graphics2D g2d) {
+	private void dibujarPodio(Graphics2D g2d) {
         // Verificar si hay suficientes llegadas para el podio
         if (llegadas.size() < 3) return;
 
