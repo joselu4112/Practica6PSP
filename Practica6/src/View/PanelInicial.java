@@ -10,12 +10,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-public class Principal extends JFrame {
+public class PanelInicial extends JFrame {
 
     private JPanel panelInicio; // Panel de bienvenida
     private PanelCarrera panelCarrera; // Panel para la carrera
 
-    public Principal() {
+    public PanelInicial() {
         setTitle("Carrera de Globos");
         setSize(800, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,10 +59,5 @@ public class Principal extends JFrame {
         panelInicio.add(btnIniciar);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Principal frame = new Principal();
-            frame.setVisible(true);
-        });
-    }
+   
 }
