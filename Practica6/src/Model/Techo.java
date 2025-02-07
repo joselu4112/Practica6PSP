@@ -10,7 +10,7 @@ public class Techo {
 
     public Techo() {
         y = 0; // El techo está en la parte superior
-        String rutaImagen = "/Images/techo.png"; // Ruta relativa a la carpeta "resources"
+        String rutaImagen = "/Images/techo.png"; 
         imagen = new ImageIcon(getClass().getResource(rutaImagen)).getImage();
 
         if (imagen == null) {

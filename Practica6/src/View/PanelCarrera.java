@@ -34,14 +34,14 @@ class PanelCarrera extends JPanel {
         techo = new Techo(); // Inicializamos el techo
 
         // Cargar la imagen de fondo
-        String rutaFondo = "/Images/fondo.jpg"; // Ajusta la ruta según tu proyecto
+        String rutaFondo = "/Images/fondo.jpg"; 
         fondo = new ImageIcon(getClass().getResource(rutaFondo)).getImage();
         if (fondo == null) {
             System.out.println("No se pudo cargar la imagen de fondo: " + rutaFondo);
         }
 
         // Cargar la imagen del techo
-        String rutaTecho = "/Images/techo.png"; // Ajusta la ruta según tu proyecto
+        String rutaTecho = "/Images/techo.png"; 
         techoImagen = new ImageIcon(getClass().getResource(rutaTecho)).getImage();
         if (techoImagen == null) {
             System.out.println("No se pudo cargar la imagen del techo: " + rutaTecho);
@@ -75,8 +75,7 @@ class PanelCarrera extends JPanel {
         globos.clear();
         llegadas.clear();
         carreraTerminada = false;
-
-        // Crear varios globos con posiciones iniciales
+        
         globos.add(new Globo(100, 400, "Rojo"));
         globos.add(new Globo(200, 400, "Azul"));
         globos.add(new Globo(300, 400, "Verde"));
@@ -94,7 +93,7 @@ class PanelCarrera extends JPanel {
                 repaint(); // Redibujar el panel
                 verificarLlegadas(); // Verificar si algún globo llegó al techo
                 try {
-                    Thread.sleep(16); // Actualización periódica (~60 FPS)
+                    Thread.sleep(16); // Actualización periódica
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -111,7 +110,7 @@ class PanelCarrera extends JPanel {
                     if (nuevaImagen != null) {
                         globo.setImagen(nuevaImagen); // Cambiar la imagen del globo
                         repaint(); // Redibujar el panel
-                        Thread.sleep(100); // Tiempo entre cada cuadro de la animación
+                        Thread.sleep(100); // Tiempo entre cada frame de la animación
                     } else {
                         System.out.println("No se pudo cargar la imagen: " + rutaImagen);
                     }
@@ -142,12 +141,12 @@ class PanelCarrera extends JPanel {
             g2d.drawImage(fondo, 0, 0, getWidth(), getHeight(), this); // Escalar la imagen al tamaño del panel
         }
 
-        // Suavizamos los bordes (opcional)
+        // Suavizar los bordes de las figuras
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Dibujar el techo como una imagen
         if (techoImagen != null) {
-            g2d.drawImage(techoImagen, 0, 0, getWidth(), 50, this); // Ajusta el tamaño según necesites
+            g2d.drawImage(techoImagen, 0, 0, getWidth(), 50, this); 
         }
 
         // Dibujar todos los globos en el buffer
@@ -155,21 +154,21 @@ class PanelCarrera extends JPanel {
             g2d.drawImage(globo.getImagen(), globo.getX(), globo.getY(), globo.getAncho(), globo.getAlto(), this);
         }
 
-        // Dibujar el podio si la carrera terminó
+        // Dibujar el podio si la carrera termina
         if (carreraTerminada) {
             dibujarPodio(g2d);
         }
 
         // Dibujar el buffer en la pantalla
         g.drawImage(buffer, 0, 0, null);
-        g2d.dispose(); // Liberar los recursos del Graphics2D
+        g2d.dispose(); // Liberar los recursos
     }
 
     private void verificarLlegadas() {
         for (Globo globo : globos) {
             if (techo.colisionaCon(globo) && !llegadas.contains(globo)) { // Si el globo llegó al techo y no está registrado
                 llegadas.add(globo);
-                iniciarAnimacion(globo); // Llamar a la animación
+                iniciarAnimacion(globo); 
                 if (llegadas.size() == globos.size()) { // Todos los globos llegaron
                     carreraTerminada = true;
                     detenerCarrera();
@@ -191,7 +190,7 @@ class PanelCarrera extends JPanel {
         g2d.setFont(new Font("Arial", Font.BOLD, 20));
 
         // Dibujar fondo del podio
-        g2d.setColor(new Color(250, 250, 250)); // Gris claro
+        g2d.setColor(new Color(250, 250, 250)); 
         g2d.fillRect(baseX - 40, baseY - 100, 300, 160);
 
         // Tercer lugar
